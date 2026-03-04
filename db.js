@@ -1,108 +1,94 @@
-const fs = require('fs');
-const path = require('path');
-const Database = require('better-sqlite3');
+const { Pool } = require('pg');
 
-const dataDir = path.join(__dirname, 'data');
-const dbPath = path.join(dataDir, 'orders.db');
+const connectionString = process.env.SUPABASE_DB_URL;
 
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+if (!connectionString) {
+  // Не падаем сразу, но логируем, чтобы было видно проблему в Railway/локально
+  // eslint-disable-next-line no-console
+  console.error('SUPABASE_DB_URL не задан. Настройте переменную окружения.');
 }
 
-const db = new Database(dbPath);
+const pool = new Pool({
+  connectionString,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS orders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    created_at TEXT NOT NULL,
-    customer_name TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    email TEXT,
-    address TEXT NOT NULL,
-    sand_type TEXT NOT NULL,
-    quantity REAL NOT NULL,
-    unit TEXT NOT NULL,
-    delivery_date TEXT,
-    comment TEXT
-  )
-`);
+async function createOrder(payload) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `
+      INSERT INTO orders (
+        customer_name,
+        phone,
+        email,
+        address,
+        sand_type,
+        quantity,
+        unit,
+        delivery_date,
+        comment
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING
+        id,
+        created_at AS "createdAt",
+        customer_name AS "customerName",
+        phone,
+        email,
+        address,
+        sand_type AS "sandType",
+        quantity,
+        unit,
+        delivery_date AS "deliveryDate",
+        comment
+      `,
+      [
+        payload.customerName,
+        payload.phone,
+        payload.email || null,
+        payload.address,
+        payload.sandType,
+        Number(payload.quantity),
+        payload.unit,
+        payload.deliveryDate || null,
+        payload.comment || null,
+      ],
+    );
 
-const insertOrderStmt = db.prepare(`
-  INSERT INTO orders (
-    created_at,
-    customer_name,
-    phone,
-    email,
-    address,
-    sand_type,
-    quantity,
-    unit,
-    delivery_date,
-    comment
-  ) VALUES (
-    @created_at,
-    @customer_name,
-    @phone,
-    @email,
-    @address,
-    @sand_type,
-    @quantity,
-    @unit,
-    @delivery_date,
-    @comment
-  )
-`);
-
-const selectAllOrdersStmt = db.prepare(`
-  SELECT
-    id,
-    created_at AS createdAt,
-    customer_name AS customerName,
-    phone,
-    email,
-    address,
-    sand_type AS sandType,
-    quantity,
-    unit,
-    delivery_date AS deliveryDate,
-    comment
-  FROM orders
-  ORDER BY created_at DESC, id DESC
-`);
-
-function createOrder(payload) {
-  const now = new Date().toISOString();
-
-  const result = insertOrderStmt.run({
-    created_at: now,
-    customer_name: payload.customerName,
-    phone: payload.phone,
-    email: payload.email || null,
-    address: payload.address,
-    sand_type: payload.sandType,
-    quantity: Number(payload.quantity),
-    unit: payload.unit,
-    delivery_date: payload.deliveryDate || null,
-    comment: payload.comment || null,
-  });
-
-  return {
-    id: result.lastInsertRowid,
-    createdAt: now,
-    customerName: payload.customerName,
-    phone: payload.phone,
-    email: payload.email || null,
-    address: payload.address,
-    sandType: payload.sandType,
-    quantity: Number(payload.quantity),
-    unit: payload.unit,
-    deliveryDate: payload.deliveryDate || null,
-    comment: payload.comment || null,
-  };
+    return result.rows[0];
+  } finally {
+    client.release();
+  }
 }
 
-function getAllOrders() {
-  return selectAllOrdersStmt.all();
+async function getAllOrders() {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `
+      SELECT
+        id,
+        created_at AS "createdAt",
+        customer_name AS "customerName",
+        phone,
+        email,
+        address,
+        sand_type AS "sandType",
+        quantity,
+        unit,
+        delivery_date AS "deliveryDate",
+        comment
+      FROM orders
+      ORDER BY created_at DESC, id DESC
+      `,
+    );
+    return result.rows;
+  } finally {
+    client.release();
+  }
 }
 
 module.exports = {

@@ -18,8 +18,8 @@
     "node": "20.x"
   },
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "pg": "^8.12.0"
   }
 }

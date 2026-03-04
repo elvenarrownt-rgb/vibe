@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/api/orders', (req, res) => {
+app.post('/api/orders', async (req, res) => {
   const {
     customerName,
     phone,
@@ -30,7 +30,7 @@ app.post('/api/orders', (req, res) => {
   }
 
   try {
-    const order = createOrder({
+    const order = await createOrder({
       customerName,
       phone,
       email,
@@ -54,9 +54,9 @@ app.post('/api/orders', (req, res) => {
   }
 });
 
-app.get('/api/orders', (req, res) => {
+app.get('/api/orders', async (req, res) => {
   try {
-    const orders = getAllOrders();
+    const orders = await getAllOrders();
     res.json(orders);
   } catch (error) {
     console.error('Ошибка при получении заявок из БД:', error);
