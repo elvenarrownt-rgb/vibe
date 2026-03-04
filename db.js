@@ -34,15 +34,15 @@ async function createOrder(payload) {
     .select(
       `
       id,
-      created_at as "createdAt",
-      customer_name as "customerName",
+      created_at,
+      customer_name,
       phone,
       email,
       address,
-      sand_type as "sandType",
+      sand_type,
       quantity,
       unit,
-      delivery_date as "deliveryDate",
+      delivery_date,
       comment
     `,
     )
