@@ -42,7 +42,7 @@ app.post('/api/orders', async (req, res) => {
       comment,
     });
 
-    console.log('Новая заявка на песок (SQLite):', order);
+    console.log('Новая заявка на песок (Supabase):', order);
 
     return res.status(201).json({
       message: 'Заявка успешно отправлена!',
@@ -50,7 +50,10 @@ app.post('/api/orders', async (req, res) => {
     });
   } catch (error) {
     console.error('Ошибка при сохранении заявки в БД:', error);
-    return res.status(500).json({ message: 'Ошибка сервера при сохранении заявки.' });
+    return res.status(500).json({
+      message: 'Ошибка сервера при сохранении заявки.',
+      details: error?.message || String(error),
+    });
   }
 });
 
