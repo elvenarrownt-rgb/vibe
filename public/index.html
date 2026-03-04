@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Заявка на покупку песка</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div class="logo">Vibe Sand</div>
+        <h1 class="title">Оформление заявки на покупку песка</h1>
+        <p class="subtitle">
+          Заполните форму ниже — мы свяжемся с вами для подтверждения заказа и уточнения деталей доставки.
+        </p>
+      </header>
+
+      <main class="main">
+        <form id="orderForm" class="card">
+          <h2 class="card-title">Данные покупателя</h2>
+          <div class="grid">
+            <div class="field">
+              <label for="customerName">ФИО / Название компании *</label>
+              <input id="customerName" name="customerName" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="phone">Телефон *</label>
+              <input id="phone" name="phone" type="tel" placeholder="+7" required />
+            </div>
+
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" placeholder="[email protected]" />
+            </div>
+
+            <div class="field field-full">
+              <label for="address">Адрес доставки *</label>
+              <input id="address" name="address" type="text" placeholder="Город, улица, объект..." required />
+            </div>
+          </div>
+
+          <h2 class="card-title">Параметры заказа</h2>
+          <div class="grid">
+            <div class="field">
+              <label for="sandType">Тип песка *</label>
+              <select id="sandType" name="sandType" required>
+                <option value="">Выберите тип песка</option>
+                <option value="карьерный">Карьерный</option>
+                <option value="речной">Речной</option>
+                <option value="мытый">Мытый</option>
+                <option value="строительный">Строительный</option>
+                <option value="другой">Другой (указать в комментарии)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="quantity">Количество *</label>
+              <input id="quantity" name="quantity" type="number" min="1" step="0.1" required />
+            </div>
+
+            <div class="field">
+              <label for="unit">Единицы измерения *</label>
+              <select id="unit" name="unit" required>
+                <option value="тонн">Тонны</option>
+                <option value="м3">Кубометры (м³)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="deliveryDate">Желаемая дата доставки</label>
+              <input id="deliveryDate" name="deliveryDate" type="date" />
+            </div>
+
+            <div class="field field-full">
+              <label for="comment">Комментарий к заказу</label>
+              <textarea
+                id="comment"
+                name="comment"
+                rows="3"
+                placeholder="Например: нужен самосвал 20 тонн, подъезд со стороны южных ворот..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn-primary">Отправить заявку</button>
+            <p class="hint">Поля, отмеченные *, обязательны для заполнения.</p>
+          </div>
+
+          <div id="message" class="message" aria-live="polite"></div>
+        </form>
+      </main>
+
+      <footer class="footer">
+        <p>© <span id="year"></span> Vibe Sand. Все права защищены.</p>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+  </html>

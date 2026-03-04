@@ -1,0 +1,25 @@
+{
+  "name": "vibe-sand-order-app",
+  "version": "1.0.0",
+  "description": "Веб-приложение для оформления заявки на покупку песка",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "sand",
+    "order",
+    "express",
+    "form"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
